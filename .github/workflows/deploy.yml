@@ -23,7 +23,7 @@ jobs:
 
       - name: Copy files to server (rsync)
         run: |
-          rsync -az --delete \
+          rsync -az -o -g --delete \
             --exclude '.git' \
             --exclude 'node_modules' \
             --exclude '.next' \
