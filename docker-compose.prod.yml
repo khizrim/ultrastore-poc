@@ -1,0 +1,17 @@
+services:
+  backend:
+    ports:
+      - "8080:80"
+    environment:
+      - WORDPRESS_SITE_URL=${WORDPRESS_SITE_URL}
+    restart: unless-stopped
+  frontend:
+    build:
+      target: prod
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - NEXT_PUBLIC_WORDPRESS_URL=${WORDPRESS_SITE_URL}
+    ports:
+      - "3000:3000"
+    restart: unless-stopped

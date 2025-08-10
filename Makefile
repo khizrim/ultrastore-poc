@@ -25,3 +25,18 @@ ps:
 clean:
 	docker compose down -v --remove-orphans
 	docker system prune -f
+
+
+# --- Production helpers ---
+prod-up:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+	@echo "Prod running: Backend http://localhost:8080 (behind Nginx on shop.example.com), Frontend http://localhost:3000 (behind Nginx on app.example.com)"
+
+prod-restart:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+
+prod-down:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+
+prod-logs:
+	docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f --tail=150
