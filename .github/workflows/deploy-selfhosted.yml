@@ -38,4 +38,3 @@ jobs:
           fi
           docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
           docker image prune -f || true
-
