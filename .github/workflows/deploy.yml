@@ -17,20 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Preflight connectivity (debug)
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.DEPLOY_SSH_HOST }}
-          username: ${{ secrets.DEPLOY_SSH_USER }}
-          port: ${{ secrets.DEPLOY_SSH_PORT }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          command_timeout: 2m
-          script_stop: true
-          script: |
-            set -x
-            echo "Testing TCP connectivity and auth to $HOSTNAME"
-            echo ok
-
       - name: Upload project to server
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -38,13 +24,9 @@ jobs:
           username: ${{ secrets.DEPLOY_SSH_USER }}
           port: ${{ secrets.DEPLOY_SSH_PORT }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          debug: true
           source: "."
           target: ${{ secrets.DEPLOY_PROJECT_DIR }}
           overwrite: true
-          rm: false
-          strip_components: 0
-          timeout: 600s
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -64,11 +46,8 @@ jobs:
             if [ -n "${{ secrets.DEPLOY_ENV_FILE }}" ]; then
               printf "%s" "${{ secrets.DEPLOY_ENV_FILE }}" > .env
             fi
-
-            # Build and (re)start services with prod overrides
-            docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
-
-            # Optional: cleanup dangling images
-            docker image prune -f || true
+            
+            # Restart prod stack via Makefile
+            make prod-restart
 
 
