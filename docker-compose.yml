@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: ultrastore_backend
+    env_file:
+      - ./.env
+    environment:
+      - WORDPRESS_DB_HOST=127.0.0.1
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME:-wordpress}
+      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER:-wpuser}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD:-wppass}
+      - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX:-wp_}
+      - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:-rootpass}
+    volumes:
+      - ./backend/themes:/var/www/html/wp-content/themes
+      - wp-plugins:/var/www/html/wp-content/plugins
+      - wp-uploads:/var/www/html/wp-content/uploads
+      - db-data:/var/lib/mysql
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    container_name: ultrastore_frontend
+    env_file:
+      - ./.env
+    environment:
+      - NODE_ENV=development
+      - HOSTNAME=0.0.0.0
+      - PORT=${FRONTEND_PORT:-3000}
+      - NEXT_PUBLIC_WORDPRESS_URL=${NEXT_PUBLIC_WORDPRESS_URL}
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  wp-plugins:
+  wp-uploads:
+  db-data:
