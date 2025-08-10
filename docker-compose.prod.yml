@@ -1,13 +1,17 @@
 services:
   backend:
+    environment:
+      - WORDPRESS_DB_HOST=127.0.0.1
+      - WORDPRESS_SITE_URL=${WORDPRESS_SITE_URL}
     ports:
       - "8080:80"
-    environment:
-      - WORDPRESS_SITE_URL=${WORDPRESS_SITE_URL}
     restart: unless-stopped
   frontend:
     build:
       target: prod
+    volumes:
+      - /app
+      - /app/node_modules
     environment:
       - NODE_ENV=production
       - PORT=3000
