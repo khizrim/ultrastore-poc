@@ -21,6 +21,10 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.SUBMODULES_TOKEN || github.token }}
 
+      - name: Create .env for deploy
+        run: |
+          printf "%s" "${{ secrets.DEPLOY_ENV_FILE }}" > .env
+
       - name: Upload project to server
         uses: appleboy/scp-action@master
         with:
@@ -43,11 +47,6 @@ jobs:
             PROJECT_DIR=${{ secrets.DEPLOY_PROJECT_DIR }}
             mkdir -p "$PROJECT_DIR"
             cd "$PROJECT_DIR"
-
-            # Write fresh .env from secret (single source of truth)
-            if [ -n "${{ secrets.DEPLOY_ENV_FILE }}" ]; then
-              printf "%s" "${{ secrets.DEPLOY_ENV_FILE }}" > .env
-            fi
             
             # Restart prod stack via Makefile
             make prod-restart
