@@ -1,0 +1,9 @@
+# Add directories or file patterns to ignore during indexing (e.g. foo/ or *.csv)
+backend/data/*
+backend/plugins/*
+backend/uploads/*
+backend/themes/twenty*
+frontend/node_modules/*
+frontend/.next/*
+frontend/dist/*
+frontend/build/*

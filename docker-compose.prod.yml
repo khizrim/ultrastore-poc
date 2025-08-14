@@ -6,16 +6,21 @@ services:
     env_file:
       - ./.env
     environment:
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST:-127.0.0.1}
+      - WORDPRESS_DB_HOST=127.0.0.1
       - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME:-wordpress}
       - WORDPRESS_DB_USER=${WORDPRESS_DB_USER:-wpuser}
       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD:-wppass}
       - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX:-wp_}
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:-rootpass}
-      - WP_SITEURL=${WP_SITEURL:-http://localhost:8080}
+      - WORDPRESS_SITE_URL=${WORDPRESS_SITE_URL:-http://localhost:8080}
+      - WORDPRESS_SITE_TITLE=${WORDPRESS_SITE_TITLE:-Ultrastore}
+      - WORDPRESS_ADMIN_USER=${WORDPRESS_ADMIN_USER:-admin}
+      - WORDPRESS_ADMIN_PASSWORD=${WORDPRESS_ADMIN_PASSWORD:-admin}
+      - WORDPRESS_ADMIN_EMAIL=${WORDPRESS_ADMIN_EMAIL:-admin@example.com}
+      - INSTALL_WOOCOMMERCE=${INSTALL_WOOCOMMERCE:-true}
     volumes:
       - ./backend/themes:/var/www/html/wp-content/themes
-      - wp-plugins:/var/www/html/wp-content/plugins
+      - ./backend/plugins:/var/www/html/wp-content/plugins
       - wp-uploads:/var/www/html/wp-content/uploads
       - db-data:/var/lib/mysql
     ports:
@@ -27,7 +32,7 @@ services:
       context: ./frontend
       target: prod
       args:
-        - WP_SITEURL=${WP_SITEURL:-http://localhost:8080}
+        WORDPRESS_SITE_URL: ${WORDPRESS_SITE_URL:-http://localhost:8080}
     container_name: ultrastore_frontend
     env_file:
       - ./.env
@@ -36,9 +41,9 @@ services:
       - HOSTNAME=0.0.0.0
       - PORT=${FRONTEND_PORT:-3000}
       - INTERNAL_WOOCOMMERCE_URL=http://backend
-      # No need to pass NEXT_PUBLIC_WOOCOMMERCE_URL if WP_SITEURL provided; Next uses it as fallback
-      - NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_KEY=${NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_KEY:-}
-      - NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_SECRET=${NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_SECRET:-}
+      - NEXT_PUBLIC_WOOCOMMERCE_URL=${NEXT_PUBLIC_WOOCOMMERCE_URL:-http://localhost:8080}
+      - NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_KEY=${NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_KEY}
+      - NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_SECRET=${NEXT_PUBLIC_WOOCOMMERCE_CONSUMER_SECRET}
     ports:
       - "3000:3000"
     depends_on:
@@ -46,6 +51,5 @@ services:
     restart: unless-stopped
 
 volumes:
-  wp-plugins:
   wp-uploads:
   db-data:

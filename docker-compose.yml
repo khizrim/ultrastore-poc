@@ -12,12 +12,12 @@ services:
       - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD:-wppass}
       - WORDPRESS_TABLE_PREFIX=${WORDPRESS_TABLE_PREFIX:-wp_}
       - MARIADB_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD:-rootpass}
-      - WP_SITEURL=${WP_SITEURL:-http://localhost:8080}
+      - WORDPRESS_SITE_URL=${WORDPRESS_SITE_URL:-http://localhost:8080}
     volumes:
       - ./backend/themes:/var/www/html/wp-content/themes
-      - wp-plugins:/var/www/html/wp-content/plugins
-      - wp-uploads:/var/www/html/wp-content/uploads
-      - db-data:/var/lib/mysql
+      - ./backend/plugins:/var/www/html/wp-content/plugins
+      - ./backend/uploads:/var/www/html/wp-content/uploads
+      - ./backend/data:/var/lib/mysql
     ports:
       - "8080:80"
     restart: unless-stopped
